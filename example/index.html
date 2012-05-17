@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html><!--HTML5 doctype-->
+<html>
+<head>
+<title>Your New Application</title>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link href="http://cdn.jqmobi.com/themes/jq.ui.css" rel="stylesheet" type="text/css" />
+<link href="http://cdn.jqmobi.com/themes/icons.css" rel="stylesheet" type="text/css" />
+<link href="themes/todos.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+    /* Prevent copy paste for all elements except text fields */
+    
+    /* Set up the page with a default background image */
+    body {
+        background-color:#fff;
+        color:#000;
+        font-family:Arial;
+        /*font-size:48pt;*/
+        margin:0px;padding:0px;
+    }
+    
+	
+	div.panel {background-color: white;}
+	div#main input {
+        width: 90%;
+        font-size: 24px;
+        font-family: inherit;
+        line-height: 1.4em;
+        border: 0;
+        outline: none;
+        padding: 6px;
+        border: 1px solid #999;
+        -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+        box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+	}
+	#todo-list .todo-destroy {display:block;}
+	ul.completed li {text-decoration:line-through;}
+    .jqmScrollbar{background:black !important;}
+</style>
+<script type="text/javascript" charset="utf-8" src="http://cdn.jqmobi.com/jq.ui.min.js"></script> 
+<script type="text/javascript" charset="utf-8" src="../jq.mvc.js"></script> 
+
+<script type="text/javascript" charset="utf-8" src="app.js"></script> 
+<script type="text/javascript">
+if(!((window.DocumentTouch&&document instanceof DocumentTouch)||'ontouchstart' in window)){
+    var script=document.createElement("script");
+    script.src="http://cdn.jqmobi.com/touch.js";
+    var tag=$("head").append(script);
+    $.os.desktop=true;
+}
+/* This function runs once the page is loaded, but appMobi is not yet active */
+  
+/* This code prevents users from dragging the page */
+var preventDefaultScroll = function(event) {
+    event.preventDefault();
+    window.scroll(0,0);
+    return false;
+};
+document.addEventListener('touchmove', preventDefaultScroll, false);
+
+</script>
+
+</head>
+<body>
+
+<div id="jQUi"> 
+    <div id="header">
+    <!-- header stuff -->
+    </div>
+
+    <div id="content">
+        <div title='Todo' id="create-todo" class="panel" selected="true">
+            <input id="new-todo"  placeholder="What needs to be done?" style="margin: 5px;width: 99%;" /><br />
+            <div style="overflow:hidden;">
+                <a href="/todo/save"  id="saveButton" style="width: 50%;float: left;height: 50px;" >Save</a>
+                <input type="button" id="cancelButton" style="width: 50%;float: left;height: 50px;" value="Cancel" />
+            </div>
+
+            <div id='leftTodo'></div>
+            
+            <div id='completedTodo'></div>
+            
+        </div>
+
+        <div title='Archived' id="archived" class="panel">
+            <div id='archivedTodo'></div>
+        </div>
+    </div>
+
+    <div id="navbar">
+        <a href="#create-todo" class="icon home">main</a>
+        <a href="#archived" class="icon target">archived</a>
+    </div>
+</div>
+
+</body>
+</html>
