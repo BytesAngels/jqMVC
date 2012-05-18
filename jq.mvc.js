@@ -105,7 +105,7 @@
                         $("head").append(file);
                         that._loadedListeners[urls[i]]=1;
                         $(document).one(urls[i]+":ready",function(e){
-                            delete that._loadedListeners[e.name];
+                            delete that._loadedListeners[e.modelName];
                             if(that._loadedListeners.length==0){
                                 that._controllersReady=true;
                                 if(that._modelsReady){
@@ -253,7 +253,12 @@
         if ($.mvc.controller[route] && $.mvc.controller[route].hasOwnProperty(axt)) 
         {
             evt&&evt.preventDefault();
+            try{
             $.mvc.controller[route][axt].apply($.mvc.controller[route], url);
+            }
+            catch(e){
+                console.log("Error with MVC handler - "+e.message,e);
+            }
             return true;
         }
         return false;
@@ -353,7 +358,7 @@
                 storageAdapters[this.modelName].get(id,
                     function(theObj){
                         el=$.extend(el,theObj);
-                        el.name=self.name;
+                        el.modelName=self.modelName;
                         el.id=id;
                         if(callback)
                            return callback(el)
@@ -425,17 +430,14 @@
         linkerCache:{}, //We do not store all documents in a single record, we keep a lookup document to link them
       
         save: function(obj,callback) {
-        debugger;
             if(!obj.id)
                obj.id=$.uuid();
-            //try{
                 window.localStorage.setItem(obj.id, JSON.stringify(obj));
                 this.linkerCache[obj.modelName][obj.id]=1;
                 window.localStorage.setItem(obj.modelName+"_linker",JSON.stringify(this.linkerCache[obj.modelName]));
                 $(document).trigger(obj.modelName + ":save", obj);
                 if(callback)
                    return callback(obj);
-          //  } catch(e){console.log(e)}
         },
         get: function(id,callback) {
             var el = window.localStorage.getItem(id);
@@ -448,13 +450,12 @@
             return callback(el);
         },
         getAll:function(type,callback){
-           // try{
                 var data=JSON.parse(window.localStorage.getItem(type+"_linker"));
                 var res=[];
                 for(var j in data){
                     if(localStorage[j]){
                         var item=JSON.parse(localStorage[j]);
-                        item.name=type;
+                        item.modelName=type;
                         item.id=j;
                         res.push(item);
                     }
@@ -466,17 +467,15 @@
                 //Fix dangling references
                 window.localStorage.setItem(type+"_linker",JSON.stringify(this.linkerCache[type])); 
                 return callback(res);
-           // } catch(e){console.log(e)}
+
         },
         remove: function(obj,callback) {
-            //try{
                 window.localStorage.removeItem(obj.id);
-                delete this.linkerCache[obj.name][obj.id];
+                delete this.linkerCache[obj.modelName][obj.id];
                 window.localStorage.setItem(obj.modelName+"_linker",JSON.stringify(this.linkerCache[obj.modelName])); 
                 $(document).trigger(obj.modelName + ":remove", obj.id);
                 if(callback)
                    return callback(obj);
-            //} catch(e){console.log(e)}
         }
     };
 

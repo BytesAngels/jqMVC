@@ -105,7 +105,7 @@
                         $("head").append(file);
                         that._loadedListeners[urls[i]]=1;
                         $(document).one(urls[i]+":ready",function(e){
-                            delete that._loadedListeners[e.name];
+                            delete that._loadedListeners[e.modelName];
                             if(that._loadedListeners.length==0){
                                 that._controllersReady=true;
                                 if(that._modelsReady){
@@ -253,7 +253,12 @@
         if ($.mvc.controller[route] && $.mvc.controller[route].hasOwnProperty(axt)) 
         {
             evt&&evt.preventDefault();
+            try{
             $.mvc.controller[route][axt].apply($.mvc.controller[route], url);
+            }
+            catch(e){
+                console.log("Error with MVC handler - "+e.message,e);
+            }
             return true;
         }
         return false;
@@ -337,7 +342,7 @@
             baseOpts[name]=opts;
         $.extend(this,opts);
       
-        this.name = name;
+        this.modelName = name;
         //this.id = $.uuid();
     };
     
@@ -349,11 +354,11 @@
             //Load a single object by id
             get: function(id,callback) {
                 var self=this;
-                var el = new $.mvc.model(this.name,baseOpts[this.name]);
-                storageAdapters[this.name].get(id,
+                var el = new $.mvc.model(this.modelName,baseOpts[this.modelName]);
+                storageAdapters[this.modelName].get(id,
                     function(theObj){
                         el=$.extend(el,theObj);
-                        el.name=self.name;
+                        el.modelName=self.modelName;
                         el.id=id;
                         if(callback)
                            return callback(el)
@@ -364,22 +369,22 @@
             },
             //Get all objects for a given type and executes a callback
             getAll: function(callback) {
-                return storageAdapters[this.name].getAll(this.name,callback);
+                return storageAdapters[this.modelName].getAll(this.modelName,callback);
                 
             },
             //Save an object and executes a callback
             save: function(callback) {
-                return storageAdapters[this.name].save(this,callback);
+                return storageAdapters[this.modelName].save(this,callback);
                 
             },
             //Remove an object and execute a callback
             remove: function(callback) {
-                return storageAdapters[this.name].remove(this,callback);               
+                return storageAdapters[this.modelName].remove(this,callback);               
             },
             //Set properties on the model.  You can pass in a key/value or an object of properties
             set:function(obj,value){
                if($.isObject(obj)){
-                    obj && obj['name'] && delete obj['name'];
+                    obj && obj['modelName'] && delete obj['modelName'];
                     obj && obj['id'] && delete obj['id'];
                     for(var j in obj)
                     {
@@ -388,7 +393,7 @@
                     }
                     return;
                }
-               if(obj.toLowerCase()!="id"&&obj.toLowerCase()!="name")
+               if(obj.toLowerCase()!="id"&&obj.toLowerCase()!="modelName")
                   this[obj]=value;
             }
         }
@@ -427,15 +432,12 @@
         save: function(obj,callback) {
             if(!obj.id)
                obj.id=$.uuid();
-            //try{
                 window.localStorage.setItem(obj.id, JSON.stringify(obj));
                 this.linkerCache[obj.modelName][obj.id]=1;
                 window.localStorage.setItem(obj.modelName+"_linker",JSON.stringify(this.linkerCache[obj.modelName]));
                 $(document).trigger(obj.modelName + ":save", obj);
                 if(callback)
                    return callback(obj);
-            }
-           // catch(e){console.log(e)}
         },
         get: function(id,callback) {
             var el = window.localStorage.getItem(id);
@@ -448,13 +450,12 @@
             return callback(el);
         },
         getAll:function(type,callback){
-           // try{
                 var data=JSON.parse(window.localStorage.getItem(type+"_linker"));
                 var res=[];
                 for(var j in data){
                     if(localStorage[j]){
                         var item=JSON.parse(localStorage[j]);
-                        item.name=type;
+                        item.modelName=type;
                         item.id=j;
                         res.push(item);
                     }
@@ -466,19 +467,15 @@
                 //Fix dangling references
                 window.localStorage.setItem(type+"_linker",JSON.stringify(this.linkerCache[type])); 
                 return callback(res);
-            }
-           // catch(e){console.log(e)}
+
         },
         remove: function(obj,callback) {
-            //try{
                 window.localStorage.removeItem(obj.id);
-                delete this.linkerCache[obj.name][obj.id];
+                delete this.linkerCache[obj.modelName][obj.id];
                 window.localStorage.setItem(obj.modelName+"_linker",JSON.stringify(this.linkerCache[obj.modelName])); 
                 $(document).trigger(obj.modelName + ":remove", obj.id);
                 if(callback)
                    return callback(obj);
-            }
-           // catch(e){console.log(e)}
         }
     };
 
