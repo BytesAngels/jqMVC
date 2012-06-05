@@ -314,7 +314,11 @@
         $.ui.customClickHandler = $.mvc.route;
     else{
         $(document).on("click","a",function(evt){
-           $mvc.controller.route(evt.target.href,evt);
+            try{
+           if($.mvc.route(evt.target.href,evt))
+                evt.preventDefault();
+           }
+           catch(x){console.log("Error "+x);evt.preventDefault();}
         });
     }
 })(jq);
