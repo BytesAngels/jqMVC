@@ -104,8 +104,10 @@
                         file.onerror=function(e){console.log("error ",e);};
                         $("head").append(file);
                         that._loadedListeners[urls[i]]=1;
+                        that._loadedListeners.length++;
                         $(document).one(urls[i]+":ready",function(e){
-                            delete that._loadedListeners[e.modelName];
+                            delete that._loadedListeners[e.data.name];
+                            that._loadedListeners.length--;
                             if(that._loadedListeners.length==0){
                                 that._controllersReady=true;
                                 if(that._modelsReady){
@@ -220,7 +222,7 @@
         }
         
         if(loaded){
-            $(document).trigger(name+":ready");
+            $(document).trigger(name+":ready",{'name':name});
             controllerReady[name]&&controllerReady[name].init.apply(controllerReady[name]);
         }
 
@@ -299,7 +301,7 @@
             viewsLoaded[controller]++;
             if((viewsLoaded[controller]==viewsTotal[controller]))
             {
-                $(document).trigger(controller+":ready");
+                $(document).trigger(controller+":ready",{name:controller});
                 
                 controllerReady[controller]&&controllerReady[controller].init.apply(controllerReady[controller]);
             }
@@ -484,7 +486,6 @@
     };
 
 })(jq);
-
 /**
  * jq.web.template - a javascript template library
  * Templating from John Resig - http://ejohn.org/ - MIT Licensed
