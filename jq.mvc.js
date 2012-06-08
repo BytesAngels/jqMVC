@@ -196,7 +196,7 @@
      */
     $.mvc.controller.create = function(name, obj) {
         
-        var loaded=false;
+        var loaded=true;
         $.mvc.controller[name] = obj;
         viewsTotal[name]=0;
         viewsLoaded[name]=0;
