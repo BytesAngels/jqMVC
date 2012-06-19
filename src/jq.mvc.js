@@ -252,15 +252,9 @@
             route=url[0];
             axt="default";
         }
-        if ($.mvc.controller[route] && $.mvc.controller[route].hasOwnProperty(axt)) 
-        {
+        if($.mvc.controller[route] && $.mvc.controller[route].hasOwnProperty(axt)) {
             evt&&evt.preventDefault();
-            try{
             $.mvc.controller[route][axt].apply($.mvc.controller[route], url);
-            }
-            catch(e){
-                console.log("Error with MVC handler - "+e.message,e);
-            }
             return true;
         }
         return false;
@@ -316,11 +310,7 @@
         $.ui.customClickHandler = $.mvc.route;
     else{
         $(document).on("click","a",function(evt){
-            try{
-           if($.mvc.route(evt.target.href,evt))
-                evt.preventDefault();
-           }
-           catch(x){console.log("Error "+x);evt.preventDefault();}
+           $.mvc.route(evt.target.href,evt)
         });
     }
 })(jq);
