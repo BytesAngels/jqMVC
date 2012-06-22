@@ -88,37 +88,38 @@
                *@param {String|Array} urls
                *@title app.loadControllers(urls);
              */
-            loadControllers:function(urls){
-                var that=this;
-                $(document).ready(function(){
-                    that._loadTimer=setTimeout(function(){
-                        that._modelsReady
-                    },1500); //Used if no models are loaded
-                    if(typeof(urls)==="string"){
-                        urls=[urls];
+            loadControllers: function(urls) {
+                var that = this;
+                $(document).ready(function() {
+                    that._loadTimer = setTimeout(function() {
+                        that._modelsReady=true;
+                        if(that._controllersReady)
+                             $(document).trigger("jqmvc:loaded");
+                    }, 1500); //Used if no models are loaded
+                    if(typeof (urls) === "string") {
+                        urls = [urls];
                     }
-                    for(var i=0;i<urls.length;i++)
-                    {
-                        var file=document.createElement("script");
-                        file.src=that._controllersDir+urls[i]+".js";
-                        file.onerror=function(e){console.log("error ",e);};
+                    for(var i = 0; i < urls.length; i++) {
+                        var file = document.createElement("script");
+                        file.src = that._controllersDir + urls[i] + ".js";
+                        file.onerror = function(e) { console.log("error ", e); };
                         $("head").append(file);
-                        that._loadedListeners[urls[i]]=1;
+                        that._loadedListeners[urls[i]] = 1;
                         that._loadedListeners.length++;
-                        $(document).one(urls[i]+":ready",function(e){
+                        $(document).one(urls[i] + ":ready", function(e) {
                             delete that._loadedListeners[e.data.name];
                             that._loadedListeners.length--;
-                            if(that._loadedListeners.length==0){
-                                that._controllersReady=true;
-                                if(that._modelsReady){
+                            if(that._loadedListeners.length == 0) {
+                                that._controllersReady = true;
+                                if(that._modelsReady) {
                                     $(document).trigger("jqmvc:loaded");
                                 }
                             }
                         });
                         delete file;
-                   }
-               });
-                
+                    }
+                });
+
             },
             
             /**
