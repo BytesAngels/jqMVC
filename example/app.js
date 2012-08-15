@@ -2,9 +2,10 @@ var app = new $.mvc.app();
 
 app.loadModels("todo");
 app.loadControllers("todo");
+//Routing by hash change
 app.listenHashChange();
 
-//Routing by hash change
+
 $.mvc.addRoute("/archived",function(d){
     console.log("Archive panel switch via hash change",arguments,d);
 })

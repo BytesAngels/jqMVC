@@ -226,6 +226,7 @@
             $(document).trigger(name+":ready",{'name':name});
             controllerReady[name]&&controllerReady[name].init.apply(controllerReady[name]);
         }
+        return $.mvc.controller[name];
 
     }
     /**

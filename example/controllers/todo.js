@@ -1,4 +1,4 @@
-$.mvc.controller.create('todo', {
+var todoCtrl=$.mvc.controller.create('todo', {
         views: {"list_tpl":"views/list.tpl"}, /* Array of views to load */
         save:function(){
                 value=$("#new-todo").val();
